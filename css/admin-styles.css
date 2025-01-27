@@ -1,0 +1,159 @@
+.benwrap {
+    display: block;
+    position: relative;
+}
+
+#qr-code-manager-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#qr-code-manager-table th, #qr-code-manager-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+#qr-code-manager-table td {
+    width: 100%;
+}
+#qr-code-manager-table td input {
+    width: 100%;
+}
+#qr-code-manager-table img {
+    width: 100px;
+    height: 100px;
+}
+#user-info-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+}
+
+.user-info-content {
+    text-align: left;
+}
+
+#close-user-info {
+    float: right;
+    margin-bottom: 10px;
+}
+.dashicons-qrcode::before {
+    content: "\25A7";
+}
+.ben-but {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    
+}
+.ben-userinfo {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+.benui-each {
+    flex: 0.48;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid red;
+    padding: 20px;
+    margin: 20px;
+}
+
+/* styles for the spinner */
+.benw-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    margin: auto;
+    width: 20px;
+}
+
+.benw-spinner img {
+    height: 50px;
+    width: 50px;
+    z-index: 9999;
+    background-color: red;
+}
+
+/* scanner page */
+.brrcs-head {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+}
+.brrcs-head-r {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+#modal-user-profile-image, .modal-user-profile-image {
+    height: auto;
+    width: 200px ;
+}
+.uim_user {
+    display: block;
+    text-align: center;
+    margin: auto;
+}
+.uimu_img {
+    width: 150px !important;
+    height: auto;
+}
+#restapi_controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+}
+#restapi_refresh, .update-qr-btn, .view-info-btn {
+    background: #f62431;
+    color: white;
+    padding: 14px 30px;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+#restapi_clear {
+    background: #bf9004;
+    color: white;
+    font-size: 18px;
+    font-weight: 800;
+    padding: 14px 30px;
+    border-radius: 5px;
+}
+
+/* pagination css */
+.benqr-tablenav-pages {
+    display: block;
+}
+
+.benqr-tablenav-pages ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+}
+.benqr-tablenav-pages ul li {
+    padding-bottom: 1px;
+}
+.benqr-tablenav-pages ul li .current {
+    color: #f62431;
+    border-bottom: 1px solid #bf9004;
+    padding-bottom: 1px;
+}

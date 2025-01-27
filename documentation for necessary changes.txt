@@ -1,0 +1,187 @@
+this code below from line 3 to line 64 is to be added to the function.php of the theme. this code is meant to upload user pictures 
+
+// Handle profile image upload during user registration
+add_action('user_register', 'save_user_profile_image', 10, 1);
+
+function save_user_profile_image($user_id) {
+    // Log function trigger
+    error_log('save_user_profile_image triggered for User ID: ' . $user_id);
+
+    // Check if the request is from a mobile device
+    if (wp_is_mobile()) {
+        error_log('Mobile device detected during file upload.');
+    } else {
+        error_log('Desktop or non-mobile device detected during file upload.');
+    }
+
+    // Check if a file is uploaded
+    if (isset($_FILES['profile_image']) && !empty($_FILES['profile_image']['name'])) {
+        $file = $_FILES['profile_image'];
+        error_log('File details: ' . print_r($file, true));
+
+        // Validate file type (JPEG, PNG, JPG)
+        $allowed_types = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!in_array($file['type'], $allowed_types)) {
+            error_log('Invalid file type: ' . $file['type']);
+            echo "<script>alert('Invalid file type. Please upload a JPEG or PNG image.');</script>";
+            return;
+        }
+
+        // Validate file size (max 2MB)
+        if ($file['size'] > 2 * 1024 * 1024) {
+            error_log('File size exceeds limit: ' . $file['size']);
+            echo "<script>alert('File size exceeds the 2MB limit. Please upload a smaller file.');</script>";
+            return;
+        }
+
+        // Use WordPress's media upload function to handle the file
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        $upload_overrides = ['test_form' => false];
+        error_log('Attempting to upload file...');
+
+        $upload = wp_handle_upload($file, $upload_overrides);
+
+        if (isset($upload['file'])) {
+            // File uploaded successfully
+            $file_url = $upload['url']; // Get the file URL
+            $file_path = $upload['file']; // Get the file path
+
+            // Save the file URL in user meta
+            update_user_meta($user_id, 'profile_image', $file_url);
+
+            // Debugging: Log the file URL for verification
+            error_log('Profile image uploaded successfully: ' . $file_url);
+            echo "<script>alert('Profile image uploaded successfully.');</script>";
+        } else {
+            // Handle upload error
+            error_log('File upload failed: ' . $upload['error']);
+            echo "<script>alert('File upload failed. Please try again.');</script>";
+        }
+    } else {
+        error_log('No profile image uploaded.');
+        echo "<script>alert('No profile image uploaded. Please select a file.');</script>";
+    }
+}
+
+this code below is to set the uploaded picture above as the user profile image
+// Use custom image as user avatar
+add_filter('get_avatar_url', 'use_custom_avatar', 10, 2);
+
+function use_custom_avatar($avatar_url, $user_id) {
+    $profile_image = get_user_meta($user_id, 'profile_image', true);
+    if ($profile_image) {
+        // If user has a profile image, return that image URL
+        return $profile_image;
+    }
+    // Otherwise, return the default gravatar URL
+    return $avatar_url;
+}
+
+this code bwlow is meant to display the user picture above in the user profile page and also it is meant to be added in the theme function file.
+// Display profile image in user profile page
+add_action('show_user_profile', 'display_profile_image_on_user_page');
+add_action('edit_user_profile', 'display_profile_image_on_user_page');
+
+function display_profile_image_on_user_page($user) {
+    $profile_image = get_user_meta($user->ID, 'profile_image', true);
+    ?>
+    <h3>Profile Image</h3>
+    <?php if ($profile_image): ?>
+        <img src="<?php echo esc_url($profile_image); ?>" alt="Profile Image" style="max-width: 150px; height: auto;">
+    <?php else: ?>
+        <p>No profile image uploaded.</p>
+    <?php endif; ?>
+    <?php
+}
+
+
+
+this code below from line 141 to 160 will be added to the pm pro checkout page so that the image upload input can display.
+the html for the image upload below 
+<div>
+    <label for="profile_image">Upload Profile Image *</label>
+    <input type="file" name="profile_image" id="profile_image" accept="image/*" required>
+    <small>Accepted formats: JPG, PNG. Max size: 5MB</small>
+</div>
+
+the javascript to check for the image upload file size. if image is greater than 5mb the user get an alert.
+		<div class="ben_pmpro_image_section">
+                                        <div>
+                                            <label for="profile_image">Upload Profile Image *</label>
+                                            <input
+                                                type="file"
+                                                name="profile_image"
+                                                id="profile_image"
+                                                accept="image/*"
+                                                required
+                                            />
+                                            <small>Accepted formats: JPG, PNG. Max size: 2MB</small>
+                                        </div>
+                                    <!-- Image Preview Container -->
+                                        <div
+                                            id="ben_pmpro_image_preview_container"
+                                            class="ben_pmpro-preview-container"
+                                            style="display: none; margin-top: 10px"
+                                        >
+                                            <label class="ben_pmpro-label">Image Preview:</label>
+                                            <img
+                                                id="ben_pmpro_image_preview"
+                                                src=""
+                                                alt="Profile Image Preview"
+                                                class="ben_pmpro-preview-image"
+                                                style="max-width: 200px; height: auto"
+                                            />
+                                        </div>
+                                    </div>
+
+                                <script>
+                                    // Handle the profile image upload and validation
+                                    document.getElementById("profile_image").addEventListener("change", function () {
+                                        console.log("profile image script working perfectly");
+                                        const file = this.files[0]; // Get the selected file
+                                        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+                                
+                                        // Validate file size
+                                        if (file && file.size > maxSize) {
+                                            alert("Image size exceeds 2MB. Please select a smaller image.");
+                                            this.value = ""; // Clear the input field
+                                            document.getElementById("ben_pmpro_image_preview_container").style.display = "none"; // Hide preview
+                                        } else {
+                                            // Proceed with image preview and type validation if file size is correct
+                                            if (file) {
+                                                const allowedTypes = ["image/jpeg", "image/png"];
+                                                if (allowedTypes.includes(file.type)) {
+                                                    const reader = new FileReader();
+                                
+                                                    // Set the onload event to show the preview
+                                                    reader.onload = function (e) {
+                                                        const previewContainer = document.getElementById("ben_pmpro_image_preview_container");
+                                                        const imagePreview = document.getElementById("ben_pmpro_image_preview");
+                                                        
+                                                        imagePreview.src = e.target.result;
+                                                        previewContainer.style.display = "block"; // Show the preview container
+                                                    };
+                                
+                                                    // Read the file as a data URL
+                                                    reader.readAsDataURL(file);
+                                                } else {
+                                                    alert("Please upload a valid image (JPG or PNG)");
+                                                    document.getElementById("ben_pmpro_image_preview_container").style.display = "none"; // Hide preview
+                                                }
+                                            }
+                                        }
+                                    });
+                                </script>
+
+
+//this code below goes to the pmpro checkout page for adding of firstname and last name for the user.
+ <div class="pmpro_user_names pmpro_cols-2">
+<div class="pmpro_form_field">
+    <label class="pmpro_form_label" for="first_name"><?php _e('First Name', 'paid-memberships-pro'); ?></label>
+    <input id="first_name" name="first_name" type="text" class=" pmpro_form_input" size="30" />
+</div>
+<div class="pmpro_form_field">
+    <label class="pmpro_form_label" for="last_name"><?php _e('Last Name', 'paid-memberships-pro'); ?></label>
+    <input id="last_name" name="last_name" type="text" class="pmpro_form_input" size="30" />
+</div>
+</div>
