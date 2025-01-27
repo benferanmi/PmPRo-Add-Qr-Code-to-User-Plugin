@@ -1,4 +1,4 @@
-Ben's QR Code Manager
+## Ben's QR Code Manager
 
  Description
 Ben's QR Code Manager is a custom WordPress plugin designed to generate, manage, and display QR codes linked to user accounts. Seamlessly integrated with the Paid Memberships Pro (PMPro) plugin, this tool provides an efficient way to manage membership details and validate user access via QR codes. It supports real-time scanning and API-based validation for mobile and web-based applications.
